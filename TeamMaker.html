@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Team Maker</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+<script type="text/javascript">
+playerComparitor = function(a,b) {
+    if(a.rating < b.rating) {
+      return -1;
+    } else if(a.rating > b.rating) {
+      return 1;
+    } else {
+      return 0;
+    }
+}
+teamComparitor = function(a,b) {
+    if(a.rating > b.rating) {
+      return -1;
+    } else if(a.rating < b.rating) {
+      return 1;
+    } else {
+      return 0;
+    }
+}
+
+var players = []
+var unassignPlayers = [];
+var teamSize = 0;
+var numOfTeams = 0;
+var unfinishedTeams;
+var finishedTeams = [];
+
+function isTeamFinished(teamID) {
+  if (unfinishedTeams[teamID].players.length == teamSize) {
+    finishedTeams.push(unfinishedTeams.splice(teamID, 1));
+  }
+}
+
+function createPlayerList() {
+  i = 0;
+  while (document.getElementById('player-name-' + i)) {
+    var player = new Object();
+    player.name = document.getElementById('player-name-' + i).value;
+    player.rating = document.getElementById("player-rating-" + i).value;
+    players.push(player);
+    i++;
+  }
+}
+
+function assignPlayers() {
+  players = players.sort(playerComparitor);
+
+  for (i = 0; i < players.length; i++) {
+    if (unfinishedTeams.length > 0) {
+      unfinishedTeams = unfinishedTeams.sort(teamComparitor);
+      unfinishedTeams[0].players.push(players[i].name);
+      unfinishedTeams[0].rating = unfinishedTeams[0].rating + players[i].rating;
+      isTeamFinished(0);
+    } else {
+      unassignPlayers.push(players[i].name);
+    }
+  }
+}
+
+function displayResults() {
+  for (i = 0; i < finishedTeams.length; i++) {
+    var newdiv = document.createElement('div');
+    newdiv2.className = 'col-sm-4';
+    results.appendChild(newdiv);
+
+    var table = document.createElement('table');
+    table.className = "table table-bordered";
+    newdiv.appendChild(table);
+
+    var th = document.createElement('th');
+    table.appendChild(th);
+    var td = document.createElement('td');
+    td.innerHTML = "Team " + (i + 1);
+    th.appendChild(td);
+
+    for (j = 0; j < finishedTeams[i].players.length; j++) {
+      var tr = document.createElement('tr');
+      table.appendChild(tr);
+      var td = document.createElement('td');
+      td.innerHTML = finishedTeams[i].players[j];
+      tr.appendChild(td);
+    }
+  }
+}
+
+function buildTeams() {
+  createPlayerList();
+  teamSize = document.getElementById('team-size').value;
+  numOfTeams = Math.floor(players.length / teamSize);
+  unfinishedTeams = new Array(numOfTeams);
+  assignPlayers();
+  // TODO display results
+  displayResults();
+}
+
+var rowId = 1;
+function generateRow() {
+  var newdiv = document.createElement('div');
+  newdiv.className = 'list-group';
+  document.getElementById('form').appendChild(newdiv);
+  var newdiv2 = document.createElement('div');
+  newdiv2.className = 'col-sm-4';
+  newdiv.appendChild(newdiv2);
+  var newdiv3 = document.createElement('div');
+  newdiv3.className = 'col-sm-1';
+  newdiv.appendChild(newdiv3);
+  newdiv.appendChild(document.createElement("br"));
+
+  var input1 = document.createElement("input");
+  input1.type = "text";
+  input1.className = "form-control";
+  input1.id = "player-name-" + rowId;
+  input1.placeholder="John Smith"
+  newdiv2.appendChild(input1);
+
+  var input2 = document.createElement("input");
+  input2.type = "text";
+  input2.className = "form-control";
+  input2.id = "player-rating-" + rowId;
+  input2.placeholder="1-5"
+  newdiv3.appendChild(input2);
+
+  rowId++;
+}
+</script>
+</head>
+<body style="background-color: silver">
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <h1 style="color: white">Team Maker</h1>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <p class="lead">Select team size and enter players</p>
+            <form class="form-horizontal">
+              <div class="form-group">
+                <label for="team-size" class="col-sm-2 control-label">Team Size</label>
+                <div class="col-sm-1">
+                  <input type="text" class="form-control" id="team-size" placeholder="3">
+                </div>
+              </div>
+              <div id="form" class="form-group">
+                <div class="list-group">
+                  <div class="col-sm-4">
+                    Name
+                  </div>
+                  <div class="col-sm-2">
+                    Rating (Higher is better)
+                  </div>
+                </div>
+                <div class="list-group">
+                  <div class="col-sm-4">
+                    <input type="text" class="form-control" id="player-name-0" placeholder="John Smith">
+                  </div>
+                  <div class="col-sm-1">
+                    <input type="text" class="form-control" id="player-rating-0" placeholder="1-5">
+                  </div>
+                  <br>
+                </div>
+              </div>
+              <div>
+                <p><button type="button" class="btn btn-primary" onclick="generateRow()">Add player</button></p>
+              </div>
+              <div>
+                <p><button type="button" class="btn btn-success" onclick="buildTeams()">Create teams</button></p>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div id="results" class="panel-body">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
