@@ -37,13 +37,14 @@ var unfinishedTeams;
 var finishedTeams = [];
 
 function isTeamFinished(teamID) {
+  alert(unfinishedTeams[teamID].players.length + " = " + teamSize);
   if (unfinishedTeams[teamID].players.length == teamSize) {
     finishedTeams.push(unfinishedTeams.splice(teamID, 1));
   }
 }
 
 function createPlayerList() {
-  i = 0;
+  var i = 0;
   while (document.getElementById('player-name-' + i)) {
     var player = new Object();
     player.name = document.getElementById('player-name-' + i).value;
@@ -54,11 +55,13 @@ function createPlayerList() {
 }
 
 function assignPlayers() {
-  players = players.sort(playerComparitor);
+  players.sort(playerComparitor);
 
-  for (i = 0; i < players.length; i++) {
+  for (var i = 0; i < players.length; i++) {
     if (unfinishedTeams.length > 0) {
-      unfinishedTeams = unfinishedTeams.sort(teamComparitor);
+      unfinishedTeams.sort(teamComparitor);
+      unfinishedTeams[0] = new Object();
+      unfinishedTeams[0].players = [];
       unfinishedTeams[0].players.push(players[i].name);
       unfinishedTeams[0].rating = unfinishedTeams[0].rating + players[i].rating;
       isTeamFinished(0);
@@ -69,10 +72,10 @@ function assignPlayers() {
 }
 
 function displayResults() {
-  for (i = 0; i < finishedTeams.length; i++) {
+  for (var i = 0; i < finishedTeams.length; i++) {
     var newdiv = document.createElement('div');
     newdiv2.className = 'col-sm-4';
-    results.appendChild(newdiv);
+    document.getElementById('results').appendChild(newdiv);
 
     var table = document.createElement('table');
     table.className = "table table-bordered";
@@ -84,7 +87,7 @@ function displayResults() {
     td.innerHTML = "Team " + (i + 1);
     th.appendChild(td);
 
-    for (j = 0; j < finishedTeams[i].players.length; j++) {
+    for (var j = 0; j < finishedTeams[i].players.length; j++) {
       var tr = document.createElement('tr');
       table.appendChild(tr);
       var td = document.createElement('td');
@@ -95,11 +98,21 @@ function displayResults() {
 }
 
 function buildTeams() {
+  players = []
+  unassignPlayers = [];
+  teamSize = 0;
+  numOfTeams = 0;
+  unfinishedTeams;
+  finishedTeams = [];
+
   createPlayerList();
   teamSize = document.getElementById('team-size').value;
   numOfTeams = Math.floor(players.length / teamSize);
   unfinishedTeams = new Array(numOfTeams);
   assignPlayers();
+  alert(players.length);
+  alert(unfinishedTeams.length);
+  alert(finishedTeams.length);
   // TODO display results
   displayResults();
 }
@@ -166,6 +179,7 @@ function generateRow() {
                   <div class="col-sm-2">
                     Rating (Higher is better)
                   </div>
+                  <br>
                 </div>
                 <div class="list-group">
                   <div class="col-sm-4">
