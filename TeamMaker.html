@@ -11,18 +11,18 @@
 
 <script type="text/javascript">
 playerComparitor = function(a,b) {
-    if(a.rating < b.rating) {
+    if(a.rating > b.rating) {
       return -1;
-    } else if(a.rating > b.rating) {
+    } else if(a.rating < b.rating) {
       return 1;
     } else {
       return 0;
     }
 }
 teamComparitor = function(a,b) {
-    if(a.rating > b.rating) {
+    if(a.rating < b.rating) {
       return -1;
-    } else if(a.rating < b.rating) {
+    } else if(a.rating > b.rating) {
       return 1;
     } else {
       return 0;
@@ -37,9 +37,9 @@ var unfinishedTeams;
 var finishedTeams = [];
 
 function isTeamFinished(teamID) {
-  alert(unfinishedTeams[teamID].players.length + " = " + teamSize);
   if (unfinishedTeams[teamID].players.length == teamSize) {
-    finishedTeams.push(unfinishedTeams.splice(teamID, 1));
+    finishedTeams.push(unfinishedTeams[teamID]);
+    unfinishedTeams.splice(teamID, 1);
   }
 }
 
@@ -48,8 +48,10 @@ function createPlayerList() {
   while (document.getElementById('player-name-' + i)) {
     var player = new Object();
     player.name = document.getElementById('player-name-' + i).value;
-    player.rating = document.getElementById("player-rating-" + i).value;
-    players.push(player);
+    player.rating = parseInt(document.getElementById("player-rating-" + i).value);
+    if (player.name && player.rating) {
+      players.push(player);
+    }
     i++;
   }
 }
@@ -60,40 +62,90 @@ function assignPlayers() {
   for (var i = 0; i < players.length; i++) {
     if (unfinishedTeams.length > 0) {
       unfinishedTeams.sort(teamComparitor);
-      unfinishedTeams[0] = new Object();
-      unfinishedTeams[0].players = [];
-      unfinishedTeams[0].players.push(players[i].name);
-      unfinishedTeams[0].rating = unfinishedTeams[0].rating + players[i].rating;
+      unfinishedTeams[0].players.push(players[i]);
+      unfinishedTeams[0].rating = parseInt(unfinishedTeams[0].rating) + parseInt(players[i].rating);
       isTeamFinished(0);
     } else {
-      unassignPlayers.push(players[i].name);
+      unassignPlayers.push(players[i]);
     }
   }
 }
 
 function displayResults() {
+  document.getElementById('results').innerHTML = null;
   for (var i = 0; i < finishedTeams.length; i++) {
-    var newdiv = document.createElement('div');
-    newdiv2.className = 'col-sm-4';
-    document.getElementById('results').appendChild(newdiv);
+    drawAssignedTable(i);
+  }
+  if (unassignPlayers.length > 0) {
+    drawUnassignedTable();
+  }
+}
 
-    var table = document.createElement('table');
-    table.className = "table table-bordered";
-    newdiv.appendChild(table);
+function drawAssignedTable(i) {
+  var newdiv = document.createElement('div');
+  newdiv.className = 'col-sm-3';
+  document.getElementById('results').appendChild(newdiv);
 
-    var th = document.createElement('th');
-    table.appendChild(th);
+  var table = document.createElement('table');
+  table.className = "table table-bordered";
+  newdiv.appendChild(table);
+
+  var thead = document.createElement('thead');
+  table.appendChild(thead);
+  var headRow = document.createElement('tr');
+  thead.appendChild(headRow);
+  var th = document.createElement('th');
+  th.innerHTML = "Team " + (i + 1);
+  headRow.appendChild(th);
+  var th = document.createElement('th');
+  th.innerHTML = finishedTeams[i].rating;
+  headRow.appendChild(th);
+
+  var tbody = document.createElement('tbody');
+  table.appendChild(tbody);
+  for (var j = 0; j < finishedTeams[i].players.length; j++) {
+    var tr = document.createElement('tr');
+    tbody.appendChild(tr);
     var td = document.createElement('td');
-    td.innerHTML = "Team " + (i + 1);
-    th.appendChild(td);
+    td.innerHTML = finishedTeams[i].players[j].name;
+    tr.appendChild(td);
+    var td = document.createElement('td');
+    td.innerHTML = finishedTeams[i].players[j].rating;
+    tr.appendChild(td);
+  }
+}
 
-    for (var j = 0; j < finishedTeams[i].players.length; j++) {
-      var tr = document.createElement('tr');
-      table.appendChild(tr);
-      var td = document.createElement('td');
-      td.innerHTML = finishedTeams[i].players[j];
-      tr.appendChild(td);
-    }
+function drawUnassignedTable() {
+  var newdiv = document.createElement('div');
+  newdiv.className = 'col-sm-3';
+  document.getElementById('results').appendChild(newdiv);
+
+  var table = document.createElement('table');
+  table.className = "table table-bordered";
+  newdiv.appendChild(table);
+
+  var thead = document.createElement('thead');
+  table.appendChild(thead);
+  var headRow = document.createElement('tr');
+  thead.appendChild(headRow);
+  var th = document.createElement('th');
+  th.innerHTML = "Unassigned players";
+  headRow.appendChild(th);
+  var th = document.createElement('th');
+  th.innerHTML = "";
+  headRow.appendChild(th);
+
+  var tbody = document.createElement('tbody');
+  table.appendChild(tbody);
+  for (var j = 0; j < unassignPlayers.length; j++) {
+    var tr = document.createElement('tr');
+    tbody.appendChild(tr);
+    var td = document.createElement('td');
+    td.innerHTML = unassignPlayers[j].name;
+    tr.appendChild(td);
+    var td = document.createElement('td');
+    td.innerHTML = unassignPlayers[j].rating;
+    tr.appendChild(td);
   }
 }
 
@@ -109,11 +161,12 @@ function buildTeams() {
   teamSize = document.getElementById('team-size').value;
   numOfTeams = Math.floor(players.length / teamSize);
   unfinishedTeams = new Array(numOfTeams);
+  for (var a = 0; a < numOfTeams; a++) {
+    unfinishedTeams[a] = new Object();
+    unfinishedTeams[a].players = [];
+    unfinishedTeams[a].rating = 0;
+  }
   assignPlayers();
-  alert(players.length);
-  alert(unfinishedTeams.length);
-  alert(finishedTeams.length);
-  // TODO display results
   displayResults();
 }
 
@@ -122,12 +175,16 @@ function generateRow() {
   var newdiv = document.createElement('div');
   newdiv.className = 'list-group';
   document.getElementById('form').appendChild(newdiv);
-  var newdiv2 = document.createElement('div');
-  newdiv2.className = 'col-sm-4';
-  newdiv.appendChild(newdiv2);
-  var newdiv3 = document.createElement('div');
-  newdiv3.className = 'col-sm-1';
-  newdiv.appendChild(newdiv3);
+  var numdiv = document.createElement('div');
+  numdiv.className = 'col-sm-1';
+  numdiv.innerHTML = rowId + 1;
+  newdiv.appendChild(numdiv);
+  var namediv = document.createElement('div');
+  namediv.className = 'col-sm-4';
+  newdiv.appendChild(namediv);
+  var ratingdiv = document.createElement('div');
+  ratingdiv.className = 'col-sm-1';
+  newdiv.appendChild(ratingdiv);
   newdiv.appendChild(document.createElement("br"));
 
   var input1 = document.createElement("input");
@@ -135,14 +192,14 @@ function generateRow() {
   input1.className = "form-control";
   input1.id = "player-name-" + rowId;
   input1.placeholder="John Smith"
-  newdiv2.appendChild(input1);
+  namediv.appendChild(input1);
 
   var input2 = document.createElement("input");
   input2.type = "text";
   input2.className = "form-control";
   input2.id = "player-rating-" + rowId;
   input2.placeholder="1-5"
-  newdiv3.appendChild(input2);
+  ratingdiv.appendChild(input2);
 
   rowId++;
 }
@@ -165,37 +222,45 @@ function generateRow() {
           <div class="panel-body">
             <p class="lead">Select team size and enter players</p>
             <form class="form-horizontal">
-              <div class="form-group">
-                <label for="team-size" class="col-sm-2 control-label">Team Size</label>
-                <div class="col-sm-1">
-                  <input type="text" class="form-control" id="team-size" placeholder="3">
-                </div>
-              </div>
-              <div id="form" class="form-group">
-                <div class="list-group">
-                  <div class="col-sm-4">
-                    Name
-                  </div>
-                  <div class="col-sm-2">
-                    Rating (Higher is better)
-                  </div>
-                  <br>
-                </div>
-                <div class="list-group">
-                  <div class="col-sm-4">
-                    <input type="text" class="form-control" id="player-name-0" placeholder="John Smith">
-                  </div>
+              <div class="col-sm-10">
+                <div class="form-group">
+                  <label for="team-size" class="col-sm-2 control-label">Team Size</label>
                   <div class="col-sm-1">
-                    <input type="text" class="form-control" id="player-rating-0" placeholder="1-5">
+                    <input type="text" class="form-control" id="team-size" placeholder="3">
                   </div>
-                  <br>
                 </div>
-              </div>
-              <div>
-                <p><button type="button" class="btn btn-primary" onclick="generateRow()">Add player</button></p>
-              </div>
-              <div>
-                <p><button type="button" class="btn btn-success" onclick="buildTeams()">Create teams</button></p>
+                <div id="form" class="form-group">
+                  <div class="list-group">
+                    <div class="col-sm-1">
+                      #
+                    </div>
+                    <div class="col-sm-4">
+                      Name
+                    </div>
+                    <div class="col-sm-2">
+                      Rating (Higher is better)
+                    </div>
+                    <br>
+                  </div>
+                  <div class="list-group">
+                    <div class="col-sm-1">
+                      1
+                    </div>
+                    <div class="col-sm-4">
+                      <input type="text" class="form-control" id="player-name-0" placeholder="John Smith">
+                    </div>
+                    <div class="col-sm-1">
+                      <input type="text" class="form-control" id="player-rating-0" placeholder="1-5">
+                    </div>
+                    <br>
+                  </div>
+                </div>
+                <div>
+                  <p><button type="button" class="btn btn-primary" onclick="generateRow()">Add player</button></p>
+                </div>
+                <div>
+                  <p><button type="button" class="btn btn-success" onclick="buildTeams()">Create teams</button></p>
+                </div>
               </div>
             </form>
           </div>
