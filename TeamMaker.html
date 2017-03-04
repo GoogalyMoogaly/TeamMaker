@@ -102,7 +102,7 @@ function displayResults() {
 
 function drawAssignedTable(i) {
   var newdiv = document.createElement('div');
-  newdiv.className = 'col-xs-3';
+  newdiv.className = 'col-sm-3';
   document.getElementById('results').appendChild(newdiv);
 
   var table = document.createElement('table');
@@ -136,7 +136,7 @@ function drawAssignedTable(i) {
 
 function drawUnassignedTable() {
   var newdiv = document.createElement('div');
-  newdiv.className = 'col-xs-3';
+  newdiv.className = 'col-sm-3';
   document.getElementById('results').appendChild(newdiv);
 
   var table = document.createElement('table');
@@ -202,14 +202,14 @@ function generateRow() {
   newdiv.className = 'list-group';
   document.getElementById('form').appendChild(newdiv);
   var numdiv = document.createElement('div');
-  numdiv.className = 'col-xs-1';
+  numdiv.className = 'col-sm-1';
   numdiv.innerHTML = rowId + 1;
   newdiv.appendChild(numdiv);
   var namediv = document.createElement('div');
-  namediv.className = 'col-xs-4';
+  namediv.className = 'col-sm-4';
   newdiv.appendChild(namediv);
   var ratingdiv = document.createElement('div');
-  ratingdiv.className = 'col-xs-1';
+  ratingdiv.className = 'col-sm-1';
   newdiv.appendChild(ratingdiv);
   newdiv.appendChild(document.createElement("br"));
 
@@ -244,40 +244,40 @@ function generateRow() {
 
   <div class="container-fluid">
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-sm-12">
         <div class="panel panel-default">
           <div class="panel-body">
             <p class="lead">Select team size and enter players</p>
             <form class="form-horizontal">
-              <div class="col-xs-10">
+              <div class="col-sm-10">
                 <div class="form-group">
-                  <label for="team-size" class="col-xs-2 control-label">Team Size</label>
-                  <div class="col-xs-1">
+                  <label for="team-size" class="col-sm-2 control-label">Team Size</label>
+                  <div class="col-sm-1">
                     <input type="text" class="form-control" id="team-size" placeholder="3">
                   </div>
                   <div id="team_size_error" style="color: red"></div>
                 </div>
                 <div id="form" class="form-group">
                   <div class="list-group">
-                    <div class="col-xs-1">
+                    <div class="col-sm-1">
                       #
                     </div>
-                    <div class="col-xs-4">
+                    <div class="col-sm-4">
                       Name
                     </div>
-                    <div class="col-xs-2">
+                    <div class="col-sm-2">
                       Rating (Higher is better)
                     </div>
-                    <br>
+                    <br><br>
                   </div>
                   <div class="list-group">
-                    <div class="col-xs-1">
+                    <div class="col-sm-1">
                       1
                     </div>
-                    <div class="col-xs-4">
+                    <div class="col-sm-4">
                       <input type="text" class="form-control" id="player-name-0" placeholder="John Smith">
                     </div>
-                    <div class="col-xs-1">
+                    <div class="col-sm-1">
                       <input type="text" class="form-control" id="player-rating-0" placeholder="1-5">
                     </div>
                     <br>
