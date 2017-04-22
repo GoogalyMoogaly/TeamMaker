@@ -78,6 +78,7 @@ function assignPlayers() {
     // Check there is a non-full teamComparitor
     if (unfinishedTeams.length > 0) {
       // Sort teams to put lowest rated team top
+      unfinishedTeams.sort(randomizer);
       unfinishedTeams.sort(teamComparitor);
       // Add highest rated player to the team
       unfinishedTeams[0].players.push(players[i]);
